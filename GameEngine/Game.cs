@@ -13,6 +13,7 @@ using System.Linq;
 using glTFLoader;
 using GameEngine.Models.Gltf;
 using Jitter.LinearMath;
+using Buffer = System.Buffer;
 using Vector3 = OpenTK.Vector3;
 
 namespace GameEngine
@@ -44,14 +45,14 @@ namespace GameEngine
         // A simple vertex shader possible. Just passes through the position vector.
         const string VertexShaderSource = @"
             #version 330
-            layout(location = 0) in vec4 position;
+            layout(location = 0) in vec3 position;
             layout(location = 1) in mat4 model;
 
             uniform mat4 uViewProjection;
 
             void main(void)
             {  
-                gl_Position = uViewProjection * model * position;
+                gl_Position = uViewProjection * model * vec4(position,1);
             }
         ";
 
@@ -80,7 +81,7 @@ namespace GameEngine
 
         public virtual void OnLoad(object sender, EventArgs e)
         {
-            var modelFile = Model.Load("./Game/Resources/Models/box.gltf");
+            var modelFile = Model.Load("./Game/Resources/Models/monkey.gltf");
             TestMesh = modelFile.CreateMesh();
 
 
@@ -98,13 +99,17 @@ namespace GameEngine
 
             VertexBuffer = new GlBuffer(BufferTarget.ArrayBuffer);
             VertexBuffer.Bind();
-            VertexBuffer.SetData(TestMesh.Attributes["POSITION"]);
+
+            var testbyte = TestMesh.Attributes["POSITION"];
+            var testfloat = new float[testbyte.Length / 4];
+            Buffer.BlockCopy(testbyte, 0, testfloat, 0, testbyte.Length);
+            VertexBuffer.SetData(testfloat);
 
             MatrixBuffer = new GlBuffer(BufferTarget.ArrayBuffer);
             MatrixBuffer.Bind();
 
             var vertexBufferLayout = new GlBufferLayout();
-            vertexBufferLayout.Add(VertexAttribPointerType.Float, 3); //Vector4 4 floats
+            vertexBufferLayout.Add(VertexAttribPointerType.Float, 3); //Vector3 3 floats
 
             var matrixBufferLayout = new GlBufferLayout();
             matrixBufferLayout.Add(VertexAttribPointerType.Float, 4, divisor: 1); //Matrix 16 floats
@@ -116,7 +121,7 @@ namespace GameEngine
             VertexArray.AddBuffer(VertexBuffer, vertexBufferLayout);
             VertexArray.AddBuffer(MatrixBuffer, matrixBufferLayout);
 
-            //GL.CullFace(CullFaceMode.Front);
+            GL.CullFace(CullFaceMode.FrontAndBack);
 
             var projection = Matrix4.CreatePerspectiveFieldOfView(60f * (float)System.Math.PI / 180f, (float)WindowManager.Width / WindowManager.Height, 0.1f, 100f);
             var view = Matrix4.LookAt(
@@ -205,9 +210,7 @@ namespace GameEngine
             //var matrices = Entities.Select(entity => entity.Transform.Value).ToArray();
             var matrices = new Matrix4[]
             {
-                Matrix4.Identity,
-                Matrix4.CreateTranslation(3,0,0),
-                Matrix4.CreateTranslation(0,0,5),
+                Matrix4.CreateScale(3,3,3)
             };
 
             MatrixBuffer.Bind();
@@ -216,7 +219,12 @@ namespace GameEngine
             VertexArray.Bind();
 
             Material.Bind();
-            GL.DrawElementsInstancedBaseInstance( PrimitiveType.Triangles, TestMesh.Attributes["INDEX"].Length, DrawElementsType.UnsignedInt, TestMesh.Attributes["INDEX"], matrices.Length, 0);
+
+            var testbyte = TestMesh.Attributes["INDEX"];
+            var testuint = new ushort[testbyte.Length / 2];
+            Buffer.BlockCopy(testbyte, 0, testuint, 0, testbyte.Length);
+
+            GL.DrawElementsInstancedBaseInstance( PrimitiveType.Triangles, testuint.Length, DrawElementsType.UnsignedShort, testuint, matrices.Length, 0);
             
             WindowManager.Context.SwapBuffers();
         }
