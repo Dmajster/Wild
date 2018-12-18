@@ -1,20 +1,11 @@
-﻿using GameEngine.Components;
-using GameEngine.Mesh.Primitives;
-using GameEngine.Rendering;
-using Jitter;
+﻿using Jitter;
 using Jitter.Collision;
-using Jitter.Collision.Shapes;
-using Jitter.Dynamics;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using glTFLoader;
 using GameEngine.Models.Gltf;
-using Jitter.LinearMath;
-using Buffer = System.Buffer;
 using Vector3 = OpenTK.Vector3;
+using GameEngine.Models;
 
 namespace GameEngine
 {
@@ -42,88 +33,23 @@ namespace GameEngine
             GL.Viewport(0, 0, WindowManager.Width, WindowManager.Height);
         }
 
-        // A simple vertex shader possible. Just passes through the position vector.
-        const string VertexShaderSource = @"
-            #version 330
-            layout(location = 0) in vec3 position;
-            layout(location = 1) in mat4 model;
-
-            uniform mat4 uViewProjection;
-
-            void main(void)
-            {  
-                gl_Position = uViewProjection * model * vec4(position,1);
-            }
-        ";
-
-        //uniform mat4 uViewProjection;
-
-        // A simple fragment shader. Just a constant red color.
-        const string FragmentShaderSource = @"
-            #version 330
-            out vec4 outputColor;
-            void main(void)
-            {
-                outputColor = vec4(1.0, 0.0, 0.0, 1.0);
-            }
-        ";
-
-        public GlMaterial Material;
-        public GlBuffer VertexBuffer;
-        public GlBuffer MatrixBuffer;
-        public GlVertexArray VertexArray;
-
-        public Entity[] Entities = new Entity[3];
+        public BasicInstancedMaterial Material;
+        
         public World World;
         public CollisionSystem CollisionSystem;
 
-        public Models.Gltf.Mesh TestMesh;
+        public Model Model;
 
         public virtual void OnLoad(object sender, EventArgs e)
         {
-            var modelFile = Model.Load("./Game/Resources/Models/monkey.gltf");
-            TestMesh = modelFile.CreateMesh();
+            Model = GltfImporter.Load("./Game/Resources/Models/monkey.gltf");
 
-
-            var vertexShader = new GlShader(ShaderType.VertexShader);
-            vertexShader.Load(VertexShaderSource);
-
-            var fragmentShader = new GlShader(ShaderType.FragmentShader);
-            fragmentShader.Load(FragmentShaderSource);
-
-            Material = new GlMaterial();
-            Material.Bind();
-            Material.LoadShader(vertexShader);
-            Material.LoadShader(fragmentShader);
+            Material = new BasicInstancedMaterial();
             Material.Link();
-
-            VertexBuffer = new GlBuffer(BufferTarget.ArrayBuffer);
-            VertexBuffer.Bind();
-
-            var testbyte = TestMesh.Attributes["POSITION"];
-            var testfloat = new float[testbyte.Length / 4];
-            Buffer.BlockCopy(testbyte, 0, testfloat, 0, testbyte.Length);
-            VertexBuffer.SetData(testfloat);
-
-            MatrixBuffer = new GlBuffer(BufferTarget.ArrayBuffer);
-            MatrixBuffer.Bind();
-
-            var vertexBufferLayout = new GlBufferLayout();
-            vertexBufferLayout.Add(VertexAttribPointerType.Float, 3); //Vector3 3 floats
-
-            var matrixBufferLayout = new GlBufferLayout();
-            matrixBufferLayout.Add(VertexAttribPointerType.Float, 4, divisor: 1); //Matrix 16 floats
-            matrixBufferLayout.Add(VertexAttribPointerType.Float, 4, divisor: 1);
-            matrixBufferLayout.Add(VertexAttribPointerType.Float, 4, divisor: 1);
-            matrixBufferLayout.Add(VertexAttribPointerType.Float, 4, divisor: 1);
-
-            VertexArray = new GlVertexArray();
-            VertexArray.AddBuffer(VertexBuffer, vertexBufferLayout);
-            VertexArray.AddBuffer(MatrixBuffer, matrixBufferLayout);
 
             GL.CullFace(CullFaceMode.FrontAndBack);
 
-            var projection = Matrix4.CreatePerspectiveFieldOfView(60f * (float)System.Math.PI / 180f, (float)WindowManager.Width / WindowManager.Height, 0.1f, 100f);
+            var projection = Matrix4.CreatePerspectiveFieldOfView(60f * (float)Math.PI / 180f, (float)WindowManager.Width / WindowManager.Height, 0.1f, 100f);
             var view = Matrix4.LookAt(
                 new Vector3(10, 10, 10),
                 new Vector3(0, 0, 0),
@@ -137,54 +63,6 @@ namespace GameEngine
             GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
             /*
-            Entities[0] = new Entity()
-            {
-                Mesh = new MeshComponent()
-                {
-                    Value = new Cube()
-                },
-                RigidBody = new RigidBodyComponent()
-                {
-                    Value = new RigidBody(new BoxShape(1, 1, 1))
-                },
-                Transform = new TransformComponent()
-                {
-                    Value = Matrix4.CreateTranslation(0, 0, 0)
-                }
-            };
-
-            Entities[1] = new Entity()
-            {
-                Mesh = new MeshComponent()
-                {
-                    Value = new Cube()
-                },
-                RigidBody = new RigidBodyComponent()
-                {
-                    Value = new RigidBody(new BoxShape(1, 1, 1))
-                },
-                Transform = new TransformComponent()
-                {
-                    Value = Matrix4.CreateTranslation(0, 1, 0)
-                }
-            };
-
-            Entities[2] = new Entity()
-            {
-                Mesh = new MeshComponent()
-                {
-                    Value = new Cube()
-                },
-                RigidBody = new RigidBodyComponent()
-                {
-                    Value = new RigidBody(new BoxShape(1, 1, 1))
-                },
-                Transform = new TransformComponent()
-                {
-                    Value = Matrix4.CreateTranslation(0, 0, 0)
-                }
-            };
-
             CollisionSystem = new CollisionSystemSAP();
             World = new World(CollisionSystem);
 
@@ -210,22 +88,11 @@ namespace GameEngine
             //var matrices = Entities.Select(entity => entity.Transform.Value).ToArray();
             var matrices = new Matrix4[]
             {
-                Matrix4.CreateScale(3,3,3)
+                Matrix4.CreateScale(3,3,3),
+                Matrix4.CreateTranslation(5,0,0)
             };
 
-            MatrixBuffer.Bind();
-            MatrixBuffer.SetData(matrices);
-            
-            VertexArray.Bind();
-
-            Material.Bind();
-
-            var testbyte = TestMesh.Attributes["INDEX"];
-            var testuint = new ushort[testbyte.Length / 2];
-            Buffer.BlockCopy(testbyte, 0, testuint, 0, testbyte.Length);
-
-            GL.DrawElementsInstancedBaseInstance( PrimitiveType.Triangles, testuint.Length, DrawElementsType.UnsignedShort, testuint, matrices.Length, 0);
-            
+            Material.Render(Model, matrices);
             WindowManager.Context.SwapBuffers();
         }
 

@@ -6,6 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Math\**" />
+    <EmbeddedResource Remove="Math\**" />
+    <None Remove="Math\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="glTF2Loader" Version="1.0.0" />
     <PackageReference Include="JitterPhysics" Version="0.2.0.20" />
     <PackageReference Include="Microsoft.Win32.SystemEvents" Version="4.5.0" />
@@ -15,10 +21,6 @@
 
   <ItemGroup>
     <None Update="Game\Resources\**" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Math\" />
   </ItemGroup>
 
 </Project>

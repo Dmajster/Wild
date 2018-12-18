@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -8,7 +7,8 @@ using glTFLoader.Schema;
 
 namespace GameEngine.Models.Gltf
 {
-    public class Model
+
+    public class GltfImporter
     {
         public string Path;
         public glTFLoader.Schema.Mesh[] Meshes;
@@ -16,11 +16,11 @@ namespace GameEngine.Models.Gltf
         public glTFLoader.Schema.BufferView[] BufferViews;
         public glTFLoader.Schema.Buffer[] Buffers;
 
-        public static Model Load(string path)
+        public static GltfImporter Deserialize(string path)
         {
             var gltf = Interface.LoadModel(path);
 
-            return new Model()
+            return new GltfImporter()
             {
                 Path = path,
                 Meshes = gltf.Meshes,
@@ -30,10 +30,27 @@ namespace GameEngine.Models.Gltf
             };
         }
 
-        public Mesh CreateMesh() => CreateMesh(Meshes[0]);
-        public Mesh CreateMesh(glTFLoader.Schema.Mesh mesh)
+        public static Model Load(string path)
         {
-            var meshData = new Dictionary<string, byte[]>();
+            var data = Deserialize(path);
+
+            var model = new Model
+            {
+                Meshes = new Mesh[data.Meshes.Length]
+            };
+
+            for (int i = 0; i < model.Meshes.Length; i++)
+            {
+                model.Meshes[i] = data.CreateMesh(data.Meshes[i]);
+            }
+
+            return model;
+        }
+
+        private Mesh CreateMesh() => CreateMesh(Meshes[0]);
+        private Mesh CreateMesh(glTFLoader.Schema.Mesh mesh)
+        {
+            var meshData = new Dictionary<string, MaterialAttribute>();
 
             foreach (var meshPrimitive in mesh.Primitives)
             {
@@ -41,13 +58,27 @@ namespace GameEngine.Models.Gltf
                 if (!meshPrimitive.Indices.HasValue)
                     continue;
 
-                meshData.Add("INDEX", GetDataFromAccessor(Accessors[meshPrimitive.Indices.Value]));
+                var indexAccessor = Accessors[meshPrimitive.Indices.Value];
+
+                meshData.Add("INDEX", new MaterialAttribute
+                {
+                    BufferData = GetDataFromAccessor(indexAccessor),
+                    Size = GetComponentSize(indexAccessor.ComponentType) * GetTypeSize(indexAccessor.Type)
+                });
 
                 foreach (var meshPrimitiveAttribute in meshPrimitive.Attributes)
                 {
-                    meshData.Add(meshPrimitiveAttribute.Key, GetDataFromAccessor(Accessors[meshPrimitiveAttribute.Value])); 
+                    var accessor = Accessors[meshPrimitiveAttribute.Value];
+
+                    meshData.Add(meshPrimitiveAttribute.Key, new MaterialAttribute
+                    {
+                        BufferData = GetDataFromAccessor(accessor),
+                        Size = GetComponentSize(accessor.ComponentType) * GetTypeSize(accessor.Type)
+                    });
                 }
             }
+
+
 
             return new Mesh()
             {
@@ -55,14 +86,14 @@ namespace GameEngine.Models.Gltf
             };
         }
 
-        public byte[] GetDataFromAccessor(Accessor accessor)
+        private byte[] GetDataFromAccessor(Accessor accessor)
         {
             if (!accessor.BufferView.HasValue)
                 return null;
-            
+
             //Get buffer view object
             var bufferView = BufferViews[accessor.BufferView.Value];
-    
+
             //Get buffer object
             var buffer = Buffers[bufferView.Buffer];
 
@@ -126,10 +157,5 @@ namespace GameEngine.Models.Gltf
 
             throw new InvalidEnumArgumentException("Unknown type!");
         }
-    }
-
-    public class Mesh
-    {
-        public Dictionary<string, byte[]> Attributes;
     }
 }
