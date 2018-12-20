@@ -3,8 +3,10 @@ using Jitter.Collision;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using System;
+using GameEngine.Camera;
+using GameEngine.Extensions;
+using GameEngine.Materials;
 using GameEngine.Models.Gltf;
-using Vector3 = OpenTK.Vector3;
 using GameEngine.Models;
 
 namespace GameEngine
@@ -38,6 +40,7 @@ namespace GameEngine
         public World World;
         public CollisionSystem CollisionSystem;
 
+        public PerspectiveCamera Camera;
         public Model Model;
 
         public virtual void OnLoad(object sender, EventArgs e)
@@ -49,16 +52,10 @@ namespace GameEngine
 
             GL.CullFace(CullFaceMode.FrontAndBack);
 
-            var projection = Matrix4.CreatePerspectiveFieldOfView(60f * (float)Math.PI / 180f, (float)WindowManager.Width / WindowManager.Height, 0.1f, 100f);
-            var view = Matrix4.LookAt(
-                new Vector3(10, 10, 10),
-                new Vector3(0, 0, 0),
-                Vector3.UnitY
-            );
-            var viewProjection = view * projection;
-
-            var projectionViewLocation = GL.GetUniformLocation(Material.ProgramId, "uViewProjection");
-            GL.ProgramUniformMatrix4(Material.ProgramId, projectionViewLocation, false, ref viewProjection);
+            Camera = new PerspectiveCamera()
+            {
+                AspectRatio = (float) WindowManager.Width / WindowManager.Height
+            };
 
             GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -83,6 +80,7 @@ namespace GameEngine
 
         public virtual void OnFrameUpdate(object sender, FrameEventArgs e)
         {
+            var bla = Matrix4.CreateScale(3, 3, 3).Cast();
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
             //var matrices = Entities.Select(entity => entity.Transform.Value).ToArray();
@@ -92,7 +90,7 @@ namespace GameEngine
                 Matrix4.CreateTranslation(5,0,0)
             };
 
-            Material.Render(Model, matrices);
+            Material.Render(Model, Camera, matrices);
             WindowManager.Context.SwapBuffers();
         }
 

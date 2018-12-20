@@ -1,8 +1,11 @@
-﻿using GameEngine.Rendering;
+﻿using GameEngine.Camera;
+using GameEngine.Extensions;
+using GameEngine.Models;
+using GameEngine.Rendering;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 
-namespace GameEngine.Models.Gltf
+namespace GameEngine.Materials
 {
     public class BasicInstancedMaterial : GlMaterial
     {
@@ -68,15 +71,15 @@ namespace GameEngine.Models.Gltf
             VertexArray.AddBuffer(MatrixBuffer, matrixBufferLayout);
         }
         
-        public void Render(Model model, Matrix4[] matrices)
+        public void Render(Model model, ICamera camera, Matrix4[] matrices)
         {
             foreach( var mesh in model.Meshes)
             {
-                Render(mesh, matrices);
+                Render(mesh, camera, matrices);
             }
         }
 
-        public void Render(Mesh mesh, Matrix4[] matrices )
+        public void Render(Mesh mesh, ICamera camera, Matrix4[] matrices )
         {
             Bind();
 
@@ -85,6 +88,11 @@ namespace GameEngine.Models.Gltf
 
             MatrixBuffer.Bind();
             MatrixBuffer.SetData(matrices);
+
+            Matrix4 projection = camera.Projection.Cast();
+
+            var projectionViewLocation = GL.GetUniformLocation(ProgramId, "uViewProjection");
+            GL.ProgramUniformMatrix4(ProgramId, projectionViewLocation, false, ref projection);
 
             GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, mesh.Attributes["INDEX"].BufferData.Length, DrawElementsType.UnsignedShort, mesh.Attributes["INDEX"].BufferData, matrices.Length, 0);
         }

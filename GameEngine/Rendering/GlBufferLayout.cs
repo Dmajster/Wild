@@ -40,6 +40,30 @@ namespace GameEngine.Rendering
 
                 case VertexAttribPointerType.Byte:
                     return 1;
+                case VertexAttribPointerType.UnsignedByte:
+                    break;
+                case VertexAttribPointerType.Short:
+                    break;
+                case VertexAttribPointerType.UnsignedShort:
+                    break;
+                case VertexAttribPointerType.Int:
+                    break;
+                case VertexAttribPointerType.UnsignedInt:
+                    break;
+                case VertexAttribPointerType.Double:
+                    break;
+                case VertexAttribPointerType.HalfFloat:
+                    break;
+                case VertexAttribPointerType.Fixed:
+                    break;
+                case VertexAttribPointerType.UnsignedInt2101010Rev:
+                    break;
+                case VertexAttribPointerType.UnsignedInt10F11F11FRev:
+                    break;
+                case VertexAttribPointerType.Int2101010Rev:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(attribute), attribute, null);
             }
             
             throw new Exception($"Vertex attribute pointer type not implemented yet! {attribute}");
