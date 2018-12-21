@@ -7,7 +7,6 @@ using glTFLoader.Schema;
 
 namespace GameEngine.Models.Gltf
 {
-
     public class GltfImporter
     {
         public string Path;
@@ -46,8 +45,7 @@ namespace GameEngine.Models.Gltf
 
             return model;
         }
-
-        private Mesh CreateMesh() => CreateMesh(Meshes[0]);
+        
         private Mesh CreateMesh(glTFLoader.Schema.Mesh mesh)
         {
             var meshData = new Dictionary<string, MaterialAttribute>();

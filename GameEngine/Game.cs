@@ -3,8 +3,9 @@ using Jitter.Collision;
 using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using System;
+using System.Numerics;
 using GameEngine.Camera;
-using GameEngine.Extensions;
+using GameEngine.Components;
 using GameEngine.Materials;
 using GameEngine.Models.Gltf;
 using GameEngine.Models;
@@ -41,11 +42,19 @@ namespace GameEngine
         public CollisionSystem CollisionSystem;
 
         public PerspectiveCamera Camera;
-        public Model Model;
+        public Model MonkeyModel;
+
+        public Entity Monkey;
 
         public virtual void OnLoad(object sender, EventArgs e)
         {
-            Model = GltfImporter.Load("./Game/Resources/Models/monkey.gltf");
+            MonkeyModel = GltfImporter.Load("./Game/Resources/Models/monkey.gltf");
+            Monkey = new Entity
+            {
+                Transform = new TransformComponent(),
+                Mesh = new MeshComponent()
+            };
+
 
             Material = new BasicInstancedMaterial();
             Material.Link();
@@ -80,14 +89,13 @@ namespace GameEngine
 
         public virtual void OnFrameUpdate(object sender, FrameEventArgs e)
         {
-            var bla = Matrix4.CreateScale(3, 3, 3).Cast();
             GL.Clear(ClearBufferMask.ColorBufferBit);
 
-            //var matrices = Entities.Select(entity => entity.Transform.Value).ToArray();
-            var matrices = new Matrix4[]
+            Console.WriteLine(Transform.Rotation);
+
+            var matrices = new Matrix4x4[]
             {
-                Matrix4.CreateScale(3,3,3),
-                Matrix4.CreateTranslation(5,0,0)
+                Transform
             };
 
             Material.Render(Model, Camera, matrices);

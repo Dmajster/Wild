@@ -13,6 +13,7 @@ namespace GameEngine.Extensions
                 value.M41, value.M42, value.M43, value.M44
             );
         }
+
         public static OpenTK.Matrix4 Cast(this Matrix4x4 value)
         {
             return new OpenTK.Matrix4(
@@ -31,6 +32,11 @@ namespace GameEngine.Extensions
         public static Vector3 Cast(this Jitter.LinearMath.JVector value)
         {
             return new Vector3(value.X, value.Y, value.Z);
+        }
+
+        public static Jitter.LinearMath.JVector Cast(this Vector3 value)
+        {
+            return new Jitter.LinearMath.JVector(value.X, value.Y, value.Z);
         }
     }
 }

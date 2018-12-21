@@ -37,7 +37,6 @@ namespace GameEngine.Rendering
             {
                 case VertexAttribPointerType.Float:
                     return 4;
-
                 case VertexAttribPointerType.Byte:
                     return 1;
                 case VertexAttribPointerType.UnsignedByte:

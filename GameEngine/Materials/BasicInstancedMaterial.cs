@@ -1,4 +1,5 @@
-﻿using GameEngine.Camera;
+﻿using System.Numerics;
+using GameEngine.Camera;
 using GameEngine.Extensions;
 using GameEngine.Models;
 using GameEngine.Rendering;
@@ -35,6 +36,7 @@ namespace GameEngine.Materials
             }
         ";
 
+        public GlVertexArray VertexArray;
 
         public GlBuffer VertexBuffer;
         public GlBuffer MatrixBuffer;
@@ -66,12 +68,12 @@ namespace GameEngine.Materials
             matrixBufferLayout.Add(VertexAttribPointerType.Float, 4, divisor: 1);
             matrixBufferLayout.Add(VertexAttribPointerType.Float, 4, divisor: 1);
 
-            var VertexArray = new GlVertexArray();
+            VertexArray = new GlVertexArray();
             VertexArray.AddBuffer(VertexBuffer, vertexBufferLayout);
             VertexArray.AddBuffer(MatrixBuffer, matrixBufferLayout);
         }
         
-        public void Render(Model model, ICamera camera, Matrix4[] matrices)
+        public void Render(Model model, ICamera camera, Matrix4x4[] matrices)
         {
             foreach( var mesh in model.Meshes)
             {
@@ -79,9 +81,10 @@ namespace GameEngine.Materials
             }
         }
 
-        public void Render(Mesh mesh, ICamera camera, Matrix4[] matrices )
+        public void Render(Mesh mesh, ICamera camera, Matrix4x4[] matrices )
         {
             Bind();
+            VertexArray.Bind();
 
             VertexBuffer.Bind();
             VertexBuffer.SetData(mesh.Attributes["POSITION"].BufferData);
@@ -89,7 +92,7 @@ namespace GameEngine.Materials
             MatrixBuffer.Bind();
             MatrixBuffer.SetData(matrices);
 
-            Matrix4 projection = camera.Projection.Cast();
+            var projection = camera.Projection.Cast();
 
             var projectionViewLocation = GL.GetUniformLocation(ProgramId, "uViewProjection");
             GL.ProgramUniformMatrix4(ProgramId, projectionViewLocation, false, ref projection);
