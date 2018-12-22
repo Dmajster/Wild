@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GameEngine.Models
+namespace GameEngine.Rendering.Models
 {
     public class Mesh
     {

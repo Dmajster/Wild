@@ -7,7 +7,7 @@ namespace GameEngine
     public class TickManager
     {
         public float SimulationTime { get; private set; }
-        public float SimulationTimeStep { get; private set; } = 0.03125f;
+        public float SimulationTimeStep { get; set; } = 0.03125f;
         public float DeltaTime { get; private set; }
 
         public delegate void UpdatedEventHandler();

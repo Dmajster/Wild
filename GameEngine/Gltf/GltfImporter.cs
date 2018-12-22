@@ -5,7 +5,7 @@ using System.Linq;
 using glTFLoader;
 using glTFLoader.Schema;
 
-namespace GameEngine.Models.Gltf
+namespace GameEngine.Rendering.Models.Gltf
 {
     public class GltfImporter
     {

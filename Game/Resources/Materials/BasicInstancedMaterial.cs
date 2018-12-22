@@ -1,12 +1,11 @@
 ﻿using System.Numerics;
 using GameEngine.Camera;
 using GameEngine.Extensions;
-using GameEngine.Models;
 using GameEngine.Rendering;
-using OpenTK;
+using GameEngine.Rendering.Models;
 using OpenTK.Graphics.OpenGL4;
 
-namespace GameEngine.Materials
+namespace Game.Resources.Materials
 {
     public class BasicInstancedMaterial : GlMaterial
     {

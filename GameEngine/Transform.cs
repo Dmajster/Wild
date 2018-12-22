@@ -2,11 +2,11 @@
 
 namespace GameEngine
 {
-    public struct Transform
+    public class Transform
     {
-        public Vector3 Position;
-        public Vector3 Rotation;
-        public Vector3 Scale;
+        public Vector3 Position = Vector3.Zero;
+        public Vector3 Rotation = Vector3.Zero;
+        public Vector3 Scale = Vector3.One;
 
         public static implicit operator Matrix4x4(Transform value)
         {

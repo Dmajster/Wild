@@ -1,4 +1,4 @@
-﻿namespace GameEngine.Models
+﻿namespace GameEngine.Rendering.Models
 {
     public class Model
     {

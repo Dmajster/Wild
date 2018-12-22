@@ -29,14 +29,20 @@ namespace GameEngine.Extensions
             return new Vector3(value.X, value.Y, value.Z);
         }
 
+
         public static Vector3 Cast(this Jitter.LinearMath.JVector value)
         {
             return new Vector3(value.X, value.Y, value.Z);
         }
 
-        public static Jitter.LinearMath.JVector Cast(this Vector3 value)
+        public static Jitter.LinearMath.JVector CastPhysics(this Vector3 value)
         {
             return new Jitter.LinearMath.JVector(value.X, value.Y, value.Z);
+        }
+
+        public static OpenTK.Vector3 CastRendering(this Vector3 value)
+        {
+            return new OpenTK.Vector3(value.X, value.Y, value.Z);
         }
     }
 }
