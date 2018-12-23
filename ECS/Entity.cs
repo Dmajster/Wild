@@ -1,7 +1,8 @@
 ﻿namespace ECS
 {
-    public sealed class Entity
+    public struct Entity
     {
-        public int Id;
+        public int TableId;
+        public int RowId;
     }
 }

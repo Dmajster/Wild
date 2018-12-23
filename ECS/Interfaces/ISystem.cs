@@ -1,6 +1,6 @@
 ﻿namespace ECS.Interfaces
 {
-    interface ISystem
+    public interface ISystem
     {
     }
 }

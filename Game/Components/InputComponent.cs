@@ -2,7 +2,7 @@
 
 namespace Game.Components
 {
-    public class InputComponent : IComponent
+    public struct InputComponent : IComponent
     {
         public bool Forward;
         public bool Backward;
