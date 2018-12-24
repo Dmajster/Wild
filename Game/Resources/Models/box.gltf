@@ -17,14 +17,14 @@
             "componentType" : 5126,
             "count" : 24,
             "max" : [
-                1.0000004768371582,
                 1.0,
-                1.0000005960464478
+                1.0,
+                1.0
             ],
             "min" : [
-                -1.0000003576278687,
                 -1.0,
-                -1.0000003576278687
+                -1.0,
+                -1.0
             ],
             "type" : "VEC3"
         },
@@ -75,31 +75,16 @@
             "uri" : "box.bin"
         }
     ],
-    "materials" : [
-        {
-            "name" : "Material",
-            "pbrMetallicRoughness" : {
-                "baseColorFactor" : [
-                    0.6400000190734865,
-                    0.6400000190734865,
-                    0.6400000190734865,
-                    1.0
-                ],
-                "metallicFactor" : 0.0
-            }
-        }
-    ],
     "meshes" : [
         {
-            "name" : "Cube",
+            "name" : "Cube.001",
             "primitives" : [
                 {
                     "attributes" : {
                         "NORMAL" : 2,
                         "POSITION" : 1
                     },
-                    "indices" : 0,
-                    "material" : 0
+                    "indices" : 0
                 }
             ]
         }

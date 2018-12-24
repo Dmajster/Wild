@@ -122,5 +122,10 @@ namespace ECS
                 .OrderBy(component => component)
                 .Aggregate((s, s1) => s + s1)
                 .GetHashCode();
+
+        public Entity GetEntities<T>(T group)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

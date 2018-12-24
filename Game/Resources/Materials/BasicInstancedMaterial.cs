@@ -13,12 +13,16 @@ namespace Game.Resources.Materials
         const string VertexShaderSource = @"
             #version 330
             layout(location = 0) in vec3 position;
-            layout(location = 1) in mat4 model;
+            layout(location = 1) in vec3 normal;
+            layout(location = 2) in mat4 model;
 
             uniform mat4 uViewProjection;
 
+            out vec3 normals;
+
             void main(void)
             {  
+                normals = normal;
                 gl_Position = uViewProjection * model * vec4(position,1);
             }
         ";
@@ -28,16 +32,21 @@ namespace Game.Resources.Materials
         // A simple fragment shader. Just a constant red color.
         const string FragmentShaderSource = @"
             #version 330
+            in vec3 normals;
+
             out vec4 outputColor;
             void main(void)
             {
-                outputColor = vec4(1.0, 0.0, 0.0, 1.0);
+                outputColor = vec4(1.0, 0.0, 0.0, 1.0) * vec4( normals, 1.0 );
             }
         ";
 
+        // vec4(1.0, 0.0, 0.0, 1.0); vec4(1.0, 0.0, 0.0, 1.0) *
+
         public GlVertexArray VertexArray;
 
-        public GlBuffer VertexBuffer;
+        public GlBuffer PositionBuffer;
+        public GlBuffer NormalBuffer;
         public GlBuffer MatrixBuffer;
 
         public BasicInstancedMaterial()
@@ -51,15 +60,23 @@ namespace Game.Resources.Materials
             Bind();
             LoadShader(vertexShader);
             LoadShader(fragmentShader);
+            Link();
 
-            VertexBuffer = new GlBuffer(BufferTarget.ArrayBuffer);
-            VertexBuffer.Bind();
+
+            PositionBuffer = new GlBuffer(BufferTarget.ArrayBuffer);
+            PositionBuffer.Bind();
+
+            NormalBuffer = new GlBuffer(BufferTarget.ArrayBuffer);
+            NormalBuffer.Bind();
 
             MatrixBuffer = new GlBuffer(BufferTarget.ArrayBuffer);
             MatrixBuffer.Bind();
 
-            var vertexBufferLayout = new GlBufferLayout();
-            vertexBufferLayout.Add(VertexAttribPointerType.Float, 3); //Vector3 3 floats
+            var positionBufferLayout = new GlBufferLayout();
+            positionBufferLayout.Add(VertexAttribPointerType.Float, 3); //Vector3 3 floats
+
+            var normalBufferLayout = new GlBufferLayout();
+            normalBufferLayout.Add(VertexAttribPointerType.Float, 3);
 
             var matrixBufferLayout = new GlBufferLayout();
             matrixBufferLayout.Add(VertexAttribPointerType.Float, 4, divisor: 1); //Matrix 16 floats
@@ -68,7 +85,8 @@ namespace Game.Resources.Materials
             matrixBufferLayout.Add(VertexAttribPointerType.Float, 4, divisor: 1);
 
             VertexArray = new GlVertexArray();
-            VertexArray.AddBuffer(VertexBuffer, vertexBufferLayout);
+            VertexArray.AddBuffer(PositionBuffer, positionBufferLayout);
+            VertexArray.AddBuffer(NormalBuffer, normalBufferLayout);
             VertexArray.AddBuffer(MatrixBuffer, matrixBufferLayout);
         }
         
@@ -85,18 +103,22 @@ namespace Game.Resources.Materials
             Bind();
             VertexArray.Bind();
 
-            VertexBuffer.Bind();
-            VertexBuffer.SetData(mesh.Attributes["POSITION"].BufferData);
+            PositionBuffer.Bind();
+            PositionBuffer.SetData(mesh.Attributes["POSITION"].BufferData);
+
+            NormalBuffer.Bind();
+            NormalBuffer.SetData(mesh.Attributes["NORMAL"].BufferData);
 
             MatrixBuffer.Bind();
             MatrixBuffer.SetData(matrices);
+
 
             var projection = camera.Projection.Cast();
 
             var projectionViewLocation = GL.GetUniformLocation(ProgramId, "uViewProjection");
             GL.ProgramUniformMatrix4(ProgramId, projectionViewLocation, false, ref projection);
 
-            GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, mesh.Attributes["INDEX"].BufferData.Length, DrawElementsType.UnsignedShort, mesh.Attributes["INDEX"].BufferData, matrices.Length, 0);
+            GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, mesh.Attributes["INDEX"].BufferData.Length/2, DrawElementsType.UnsignedShort, mesh.Attributes["INDEX"].BufferData, matrices.Length, 0);
         }
     }
 }

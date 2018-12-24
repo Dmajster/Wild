@@ -1,4 +1,5 @@
-﻿using Game.Components;
+﻿using ECS;
+using Game.Components;
 
 namespace Game.Systems
 {
@@ -7,11 +8,13 @@ namespace Game.Systems
         public InputComponent Input;
     }
 
-    public class InputSystem
+    public class InputSystem : ComponentSystem
     {
-        public void OnUpdate()
+        public override void OnUpdate()
         {
+            ComponentManager.GetEntities(typeof(Group));
 
+            throw new System.NotImplementedException();
         }
     }
 }
