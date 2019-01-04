@@ -4,8 +4,10 @@ using System.IO;
 using System.Linq;
 using glTFLoader;
 using glTFLoader.Schema;
+using GameEngine.Rendering.Models;
+using Mesh = GameEngine.Rendering.Models.Mesh;
 
-namespace GameEngine.Rendering.Models.Gltf
+namespace GameEngine.Gltf
 {
     public class GltfImporter
     {

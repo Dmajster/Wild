@@ -19,7 +19,7 @@ namespace GameEngine.Rendering
             Dispose();
         }
 
-        public void Load(string source)
+        public void LoadSource(string source)
         {
             GL.ShaderSource(ShaderId, source);
             GL.CompileShader(ShaderId);
@@ -30,11 +30,6 @@ namespace GameEngine.Rendering
             GL.GetShaderInfoLog(ShaderId, out var error);
             GL.DeleteShader(ShaderId);
             throw new Exception($"GlShader of type {Type} failed to compile! Error: {error}");
-        }
-
-        public void LoadFromFile(string path)
-        {
-            //TODO
         }
 
         public void Dispose()

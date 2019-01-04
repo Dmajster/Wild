@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
+using GameEngine.Rendering.Models;
 using OpenTK.Graphics.OpenGL4;
 
 namespace GameEngine.Rendering
@@ -76,6 +78,10 @@ namespace GameEngine.Rendering
             }
 
             GL.DeleteProgram(ProgramId);
+        }
+
+        public virtual void Render(Mesh model, Camera camera, Matrix4x4[] matrices)
+        {
         }
     }
 }

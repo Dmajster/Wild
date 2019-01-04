@@ -1,13 +1,13 @@
 ﻿using System.Numerics;
-using GameEngine.Camera;
+using GameEngine.Components;
 using GameEngine.Extensions;
 using GameEngine.Rendering;
 using GameEngine.Rendering.Models;
 using OpenTK.Graphics.OpenGL4;
 
-namespace Game.Resources.Materials
+namespace GameEngine.Materials
 {
-    public class BasicInstancedMaterial : GlMaterial
+    public class BasicColoredMaterial : GlMaterial
     {
         // A simple vertex shader possible. Just passes through the position vector.
         const string VertexShaderSource = @"
@@ -17,6 +17,7 @@ namespace Game.Resources.Materials
             layout(location = 2) in mat4 model;
 
             uniform mat4 uViewProjection;
+            
 
             out vec3 normals;
 
@@ -34,14 +35,16 @@ namespace Game.Resources.Materials
             #version 330
             in vec3 normals;
 
+            uniform vec3 uColor = vec3(1.0,0,0);
+
             out vec4 outputColor;
             void main(void)
             {
-                outputColor = vec4(1.0, 0.0, 0.0, 1.0) * vec4( normals, 1.0 );
+                outputColor = vec4(uColor, 1.0);
             }
         ";
 
-        // vec4(1.0, 0.0, 0.0, 1.0); vec4(1.0, 0.0, 0.0, 1.0) *
+        // vec4(1.0, 0.0, 0.0, 1.0); vec4(1.0, 0.0, 0.0, 1.0) * vec4( normals, 1.0 ) *
 
         public GlVertexArray VertexArray;
 
@@ -49,19 +52,20 @@ namespace Game.Resources.Materials
         public GlBuffer NormalBuffer;
         public GlBuffer MatrixBuffer;
 
-        public BasicInstancedMaterial()
+        public Vector3 Color = new Vector3(1,0,0);
+
+        public BasicColoredMaterial()
         {
             var vertexShader = new GlShader(ShaderType.VertexShader);
-            vertexShader.Load(VertexShaderSource);
+            vertexShader.LoadSource(VertexShaderSource);
 
             var fragmentShader = new GlShader(ShaderType.FragmentShader);
-            fragmentShader.Load(FragmentShaderSource);
+            fragmentShader.LoadSource(FragmentShaderSource);
 
             Bind();
             LoadShader(vertexShader);
             LoadShader(fragmentShader);
             Link();
-
 
             PositionBuffer = new GlBuffer(BufferTarget.ArrayBuffer);
             PositionBuffer.Bind();
@@ -89,16 +93,8 @@ namespace Game.Resources.Materials
             VertexArray.AddBuffer(NormalBuffer, normalBufferLayout);
             VertexArray.AddBuffer(MatrixBuffer, matrixBufferLayout);
         }
-        
-        public void Render(Model model, ICamera camera, Matrix4x4[] matrices)
-        {
-            foreach( var mesh in model.Meshes)
-            {
-                Render(mesh, camera, matrices);
-            }
-        }
 
-        public void Render(Mesh mesh, ICamera camera, Matrix4x4[] matrices )
+        public override void Render(Mesh mesh, Camera camera, Matrix4x4[] matrices)
         {
             Bind();
             VertexArray.Bind();
@@ -111,14 +107,16 @@ namespace Game.Resources.Materials
 
             MatrixBuffer.Bind();
             MatrixBuffer.SetData(matrices);
-
-
-            var projection = camera.Projection.Cast();
-
+            
+            var projectionCast = camera.GetComponent<CameraComponent>().Projection.Cast();
             var projectionViewLocation = GL.GetUniformLocation(ProgramId, "uViewProjection");
-            GL.ProgramUniformMatrix4(ProgramId, projectionViewLocation, false, ref projection);
+            GL.ProgramUniformMatrix4(ProgramId, projectionViewLocation, false, ref projectionCast);
 
-            GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, mesh.Attributes["INDEX"].BufferData.Length/2, DrawElementsType.UnsignedShort, mesh.Attributes["INDEX"].BufferData, matrices.Length, 0);
+            var colorLocation = GL.GetUniformLocation(ProgramId, "uColor");
+            var colorCast = Color.CastRendering();
+            GL.ProgramUniform3(ProgramId,colorLocation,ref colorCast);
+
+            GL.DrawElementsInstancedBaseInstance(PrimitiveType.Triangles, mesh.Attributes["INDEX"].BufferData.Length / 2, DrawElementsType.UnsignedShort, mesh.Attributes["INDEX"].BufferData, matrices.Length, 0);
         }
     }
 }

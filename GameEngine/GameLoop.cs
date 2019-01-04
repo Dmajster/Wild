@@ -4,7 +4,7 @@ using OpenTK;
 
 namespace GameEngine
 {
-    public class TickManager
+    public class GameLoop
     {
         public float SimulationTime { get; private set; }
         public float SimulationTimeStep { get; set; } = 0.03125f;
@@ -21,7 +21,7 @@ namespace GameEngine
 
         private readonly Stopwatch _stopwatch;
 
-        public TickManager(WindowManager windowManager)
+        public GameLoop(WindowManager windowManager)
         {
             windowManager.UpdateFrame += OnUpdate;
             _stopwatch = new Stopwatch();

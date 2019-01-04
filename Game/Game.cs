@@ -1,77 +1,116 @@
-﻿using ECS;
-using ECS.Interfaces;
-using Game.Components;
-using Game.Resources.Materials;
-using GameEngine;
-using GameEngine.Camera;
+﻿using GameEngine;
+using GameEngine.Components;
+using GameEngine.Gltf;
 using GameEngine.Rendering.Models;
-using GameEngine.Rendering.Models.Gltf;
-using OpenTK;
 using System;
+using System.Collections.Generic;
 using System.Numerics;
-using OpenTK.Graphics.OpenGL4;
+using Game.Components;
+using GameEngine.Materials;
+using Jitter.Collision;
+using Jitter.Collision.Shapes;
+using Jitter.Dynamics;
+using Jitter.LinearMath;
 
 namespace Game
 {
     public sealed class Game
     {
         public readonly WindowManager WindowManager;
-        public readonly TickManager TickManager;
+        public readonly GameLoop GameLoop;
 
         public Game()
         {
             WindowManager = new WindowManager();
-            WindowManager.Load += OnLoad;
-            WindowManager.Resize += OnResize;
-            WindowManager.UpdateFrame += OnFrameUpdate;
+            GameLoop = new GameLoop(WindowManager);
+            Input.Window = WindowManager;
+            Time.GameLoop = GameLoop;
 
-            TickManager = new TickManager(WindowManager);
-            TickManager.PhysicsUpdated += OnPhysicsUpdate;
+            WindowManager.Scene = new Scene();
+            GameObject.Scene = WindowManager.Scene;
+
+            WindowManager.Scene.ActiveCamera = new Camera();
+
+            WindowManager.Load += OnLoad;
+            //WindowManager.Resize += OnResize;
+            WindowManager.WindowFrameUpdated += OnFrameUpdate;
+
+            
+            GameLoop.PhysicsUpdated += OnPhysicsUpdate;
             WindowManager.Run();
         }
 
-        public void OnResize(object sender, EventArgs e)
-        {
-        }
-
-        public Model Model;
-        public BasicInstancedMaterial Material;
-        public PerspectiveCamera Camera;
 
         public void OnLoad(object sender, EventArgs e)
         {
-            ComponentManager componentManager = new ComponentManager();
-            SystemManager systemManager = new SystemManager(componentManager);
-
-            Model = GltfImporter.Load("./Resources/Models/monkey.gltf");
-            Material = new BasicInstancedMaterial();
-
-            Camera = new PerspectiveCamera()
+            var groundModel = GltfImporter.Load("./Resources/Models/box.gltf");
+            var monkeyModel = GltfImporter.Load("./Resources/Models/monkey.gltf");
+            foreach (var mesh in monkeyModel.Meshes)
             {
-                AspectRatio = (float)WindowManager.Width / WindowManager.Height,
+                mesh.Material = new BasicInstancedMaterial();
+            }
+
+            var groundMaterial = new BasicColoredMaterial
+            {
+                Color = new Vector3(1, 1, 1)
             };
 
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Less);
+            foreach (var mesh in groundModel.Meshes)
+            {
+                mesh.Material = groundMaterial;
+            }
+            
+            var ground = new GameObject();
+            ground.AddComponent(new ModelComponent()
+            {
+                Model = groundModel
+            });
+            ground.Transform.Scale = new Vector3(100,1,100);
 
-            GL.CullFace(CullFaceMode.FrontAndBack);
+            ground.AddComponent(new PhysicsComponent()
+            {
+                RigidBody = new RigidBody(new BoxShape(100, 1, 100))
+                {
+                    AffectedByGravity = false
+                }
+            });
 
-            GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+            var camera = WindowManager.Scene.ActiveCamera;
+            camera.AddComponent(new FreelookCameraComponent());
+            camera.Transform.Position = new Vector3(5,-3,0);
+
+            var monkey = new GameObject();
+            monkey.AddComponent(new ModelComponent
+            {
+                Model = monkeyModel
+            });
+            monkey.AddComponent(new PhysicsComponent
+            {
+                RigidBody = new RigidBody(new BoxShape(3,3,3))
+            });
+            monkey.AddComponent(new MonkeyComponent());
+            monkey.Transform.Position = new Vector3(0, 3, 0);
+
+            var bla2 = new TriangleVertexIndices();
+
+            var positions = new List<JVector>();
+            var tris = new List<TriangleVertexIndices>();
+            var octree = new Octree(positions, tris);
+            var bla = new TriangleMeshShape(octree);
         }
 
-        public void OnFrameUpdate(object sender, FrameEventArgs e)
+        public void OnFrameUpdate(float deltaTime)
         {
-            
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-
-            Material.Render(Model, Camera, new[] { Matrix4x4.Identity });
-
+            WindowManager.Scene.OnUpdate();
+            WindowManager.Scene.ActiveCamera.Render();
             WindowManager.Context.SwapBuffers();
         }
 
         public void OnPhysicsUpdate(object sender, PhysicsUpdateEventArgs e)
         {
+            GameObject.Scene.OnFixedUpdate();
+            WindowManager.Scene.PhysicsStep(e.TimeStep);
         }
     }
 }
