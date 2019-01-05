@@ -37,7 +37,6 @@ namespace GameEngine.Physics
             var octree = new Octree(positions, tris);
             octree.BuildOctree();
             Shape = new TriangleMeshShape(octree);
-            Shape.FlipNormals = false;
         }
     }
 }

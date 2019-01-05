@@ -9,11 +9,12 @@ namespace GameEngine.Components
 
         public override void OnLoad()
         {
-            GameObject.Scene.AddRigidBody(RigidBody);
+            GameObject.Scene.AddRigidBody(ref RigidBody);
         }
 
         public override void OnFixedUpdate()
         {
+            RigidBody.AffectedByGravity = true;
         }
     }
 }

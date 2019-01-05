@@ -28,7 +28,7 @@ namespace GameEngine.Components
             };
             CameraFront = Vector3.Normalize(front);
 
-            Console.WriteLine($"{GameObject.Transform.Position} {GameObject.Transform.Rotation}");
+            //Console.WriteLine($"{GameObject.Transform.Position} {GameObject.Transform.Rotation}");
 
             var view = Matrix4x4.CreatePerspectiveFieldOfView(FieldOfView * 3.14f / 180, AspectRatio, Near, Far);
             

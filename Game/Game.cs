@@ -9,10 +9,7 @@ using System.Numerics;
 using Game.Components;
 using GameEngine.Materials;
 using GameEngine.Physics;
-using Jitter.Collision;
-using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
-using Jitter.LinearMath;
 
 namespace Game
 {
@@ -81,23 +78,30 @@ namespace Game
 
             var camera = WindowManager.Scene.ActiveCamera;
             camera.AddComponent(new FreelookCameraComponent());
+
+            camera.Transform.Position = new Vector3(5,0,0);
             camera.Transform.Position = new Vector3(154.0654f, 78.74099f, 185.0334f);
             camera.Transform.Rotation = new Vector3(224.9143f, -2.557277f, 0f);
 
 
             var monkey = new GameObject();
+            var monkeyShape = new ModelShape(monkeyModel);
+
             monkey.AddComponent(new ModelComponent
             {
                 Model = monkeyModel
             });
             monkey.AddComponent(new PhysicsComponent
             {
-                RigidBody = new RigidBody(new BoxShape(10f, 10f, 10f))
+                RigidBody = new RigidBody(monkeyShape.Shape)
                 {
+                    AffectedByGravity = false
                 }
             });
             monkey.AddComponent(new MonkeyComponent());
            
+            monkey.Transform.Position = new Vector3(0,500,0);
+
             monkey.Transform.Position = new Vector3(142.0654f, 110.74099f, 173.0334f);
         }
 

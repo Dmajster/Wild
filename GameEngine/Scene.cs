@@ -1,16 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using GameEngine.Components;
+using GameEngine.Extensions;
 using Jitter;
 using Jitter.Collision;
 using Jitter.Dynamics;
+using Jitter.LinearMath;
 
 namespace GameEngine
 {
     public sealed class Scene
     {
+        public Scene()
+        {
+            _collisionSystem = new CollisionSystemSAP();
+            _collisionSystem.CollisionDetected += OnCollisionDetected;
+            _collisionSystem.Detect(true);
+            _world = new World(_collisionSystem);
+        }
+
+        private void OnCollisionDetected(
+            RigidBody body1, RigidBody body2,
+            JVector point1, JVector point2,
+            JVector normal,
+            float penetration)
+        {
+
+            var gameObjects = FindGameObjectsWithComponent<PhysicsComponent>();
+            var first = gameObjects.First(gameObject => gameObject.GetComponent<PhysicsComponent>().RigidBody == body2);
+            first.GetComponent<PhysicsComponent>().RigidBody.Force = JVector.Zero;
+            //first.GetComponent<PhysicsComponent>().RigidBody.LinearVelocity = JVector.Zero;
+            first.Transform.Position -= normal.Cast() * penetration;
+            Console.WriteLine($"Collision detected! {body2.Position} {body2.Force}");
+        }
+
         private readonly List<GameObject> _gameObjects = new List<GameObject>();
-        private readonly World _world = new World(new CollisionSystemBrute());
+        private readonly World _world;
         public Camera ActiveCamera;
+        private readonly CollisionSystem _collisionSystem;
 
         public GameObject[] FindGameObjectsWithComponent<T>() where T : Component
         {
@@ -36,7 +64,7 @@ namespace GameEngine
             _gameObjects.Remove(gameObject);
         }
 
-        public void AddRigidBody(RigidBody rigidBody)
+        public void AddRigidBody(ref RigidBody rigidBody)
         {
             _world.AddBody(rigidBody);
         }
@@ -53,7 +81,7 @@ namespace GameEngine
 
         public void PhysicsStep(float deltaTime)
         {
-            _world.Step(deltaTime,true);
+            _world.Step(deltaTime,false);
         }
     }
 }

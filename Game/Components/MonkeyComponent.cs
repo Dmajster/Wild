@@ -9,6 +9,7 @@ namespace Game.Components
     {
         public override void OnUpdate()
         {
+            GameObject.Transform.Position += new Vector3(1,0,0) * Time.DeltaTime;
         }
     }
 }
