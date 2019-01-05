@@ -16,11 +16,6 @@ namespace GameEngine.Rendering
             ProgramId = GL.CreateProgram();
         }
 
-        ~GlMaterial()
-        {
-            Dispose();
-        }
-
         public void Link()
         {
             foreach (var loadedShader in LoadedShaders.Values)

@@ -108,7 +108,7 @@ namespace GameEngine.Materials
             MatrixBuffer.Bind();
             MatrixBuffer.SetData(matrices);
             
-            var projectionCast = camera.GetComponent<CameraComponent>().Projection.Cast();
+            var projectionCast = camera.GetComponent<CameraComponent>().Projection().Cast();
             var projectionViewLocation = GL.GetUniformLocation(ProgramId, "uViewProjection");
             GL.ProgramUniformMatrix4(ProgramId, projectionViewLocation, false, ref projectionCast);
 

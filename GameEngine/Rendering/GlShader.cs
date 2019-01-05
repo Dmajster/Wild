@@ -14,11 +14,6 @@ namespace GameEngine.Rendering
             Type = type;
         }
 
-        ~GlShader()
-        {
-            Dispose();
-        }
-
         public void LoadSource(string source)
         {
             GL.ShaderSource(ShaderId, source);

@@ -1,0 +1,107 @@
+{
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5123,
+            "count" : 185487,
+            "max" : [
+                31064
+            ],
+            "min" : [
+                0
+            ],
+            "type" : "SCALAR"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 31065,
+            "max" : [
+                238.36651611328125,
+                141.7104949951172,
+                255.0999755859375
+            ],
+            "min" : [
+                -259.88018798828125,
+                -196.385498046875,
+                -243.1467742919922
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 31065,
+            "max" : [
+                0.9790948033332825,
+                0.999969482421875,
+                0.9544358849525452
+            ],
+            "min" : [
+                -0.9743339419364929,
+                0.158848837018013,
+                -0.9797967672348022
+            ],
+            "type" : "VEC3"
+        }
+    ],
+    "asset" : {
+        "generator" : "Khronos Blender glTF 2.0 exporter",
+        "version" : "2.0"
+    },
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 370974,
+            "byteOffset" : 0,
+            "target" : 34963
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 372780,
+            "byteOffset" : 370976,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 372780,
+            "byteOffset" : 743756,
+            "target" : 34962
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 1116536,
+            "uri" : "test_1.bin"
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "Grid.001",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "NORMAL" : 2,
+                        "POSITION" : 1
+                    },
+                    "indices" : 0
+                }
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "Grid"
+        }
+    ],
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0
+            ]
+        }
+    ]
+}

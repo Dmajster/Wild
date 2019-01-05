@@ -15,11 +15,6 @@ namespace GameEngine.Rendering
             Type = type;
         }
 
-        ~GlBuffer()
-        {
-            Dispose();
-        }
-
         public void Bind()
         {
             GL.BindBuffer(Type,Id);

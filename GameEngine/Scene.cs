@@ -9,7 +9,7 @@ namespace GameEngine
     public sealed class Scene
     {
         private readonly List<GameObject> _gameObjects = new List<GameObject>();
-        private readonly World _world = new World(new CollisionSystemSAP());
+        private readonly World _world = new World(new CollisionSystemBrute());
         public Camera ActiveCamera;
 
         public GameObject[] FindGameObjectsWithComponent<T>() where T : Component

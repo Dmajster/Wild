@@ -13,11 +13,6 @@ namespace GameEngine.Rendering
             Id = GL.GenVertexArray();
         }
 
-        ~GlVertexArray()
-        {
-            Dispose();
-        }
-
         public void Bind()
         {
             GL.BindVertexArray(Id);

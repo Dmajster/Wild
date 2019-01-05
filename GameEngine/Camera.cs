@@ -1,13 +1,17 @@
-﻿using GameEngine.Components;
+﻿using System;
+using GameEngine.Components;
 using OpenTK.Graphics.OpenGL4;
 using System.Numerics;
+using Jitter;
+using Jitter.LinearMath;
 
 namespace GameEngine
 {
     public class Camera : GameObject
     {
-        public readonly CameraComponent CameraComponent;
-
+        
+        public CameraComponent CameraComponent;
+        
         public Camera()
         {
             GL.Enable(EnableCap.DepthTest);
@@ -15,30 +19,13 @@ namespace GameEngine
             GL.CullFace(CullFaceMode.FrontAndBack);
             GL.ClearColor(0.64f, 0.83f, 1, 1.0f);
 
-            CameraComponent = AddComponent(new CameraComponent()
-            {
-                FieldOfView = 60,
-                AspectRatio = 3 / 4f,
-                Near = 0.1f,
-                Far = 100f
-            });
+            CameraComponent = AddComponent(new CameraComponent());
         }
-
 
         public void Render()
         {
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Clear(ClearBufferMask.DepthBufferBit);
-
-            var projection = Matrix4x4.CreatePerspectiveFieldOfView(
-                CameraComponent.FieldOfView * (float)System.Math.PI / 180f,
-                CameraComponent.AspectRatio,
-                CameraComponent.Near,
-                CameraComponent.Far
-            );
-
-            CameraComponent.Projection = Transform.ToMatrix4X4() * projection;
-
 
             var gameObjects = Scene.FindGameObjectsWithComponent<ModelComponent>();
 
@@ -54,6 +41,15 @@ namespace GameEngine
                         gameObject.GetComponent<TransformComponent>().ToMatrix4X4()
                     });
                 }
+            }
+
+            gameObjects = Scene.FindGameObjectsWithComponent<PhysicsComponent>();
+
+            foreach (var gameObject in gameObjects)
+            {
+                var physics = gameObject.GetComponent<PhysicsComponent>();
+                //physics.RigidBody.EnableDebugDraw = true;
+                //physics.RigidBody.DebugDraw(new DebugDrawer());
             }
         }
     }

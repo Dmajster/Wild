@@ -103,7 +103,7 @@ namespace GameEngine.Gltf
             var bufferData = File.ReadAllBytes(bufferDirectory);
 
             //Slice pre byte offset data away
-            var bufferViewData = bufferData.Skip(bufferView.ByteOffset).Take(bufferView.ByteLength+100).ToArray();
+            var bufferViewData = bufferData.Skip(bufferView.ByteOffset).Take(bufferView.ByteLength).ToArray();
 
             //Check if it's ok to return or if there's still the stride we need to take care of
             if (!bufferView.ByteStride.HasValue)
