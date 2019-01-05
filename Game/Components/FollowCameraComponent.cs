@@ -6,9 +6,10 @@ using GameEngine.Components;
 
 namespace Game.Components
 {
-    public class FreelookCameraComponent : Component
+    public class FollowCameraComponent : Component
     {
         public CameraComponent CameraComponent;
+        public GameObject FollowGameObject;
 
         public override void OnLoad()
         {
@@ -17,47 +18,33 @@ namespace Game.Components
 
         public override void OnUpdate()
         {
-            if (Input.GetMouseButton(MouseButton.Left))
-            {
-                GameObject.Transform.Position += GameObject.GetComponent<CameraComponent>().CameraFront * 10 * Time.DeltaTime;
-            }
+            GameObject.Transform.Position = FollowGameObject.Transform.Position +
+                                            FollowGameObject.Transform.Forward * -7 + Vector3.UnitY * 2;
+                                            
+            CameraComponent.CameraFront = FollowGameObject.Transform.Forward;
 
-            if (Input.GetMouseButton(MouseButton.Right))
-            {
-                GameObject.Transform.Position -= GameObject.GetComponent<CameraComponent>().CameraFront * 10 * Time.DeltaTime;
-            }
+           
 
-            if (Input.GetKey(Key.Q))
+            if (Input.GetKey(Key.A))
             {
-                GameObject.Transform.Rotation -= new Vector3(100 * Time.DeltaTime, 0, 0);
-            }
+                FollowGameObject.Transform.Rotation -= new Vector3(100 * Time.DeltaTime, 0, 0);
 
-            if (Input.GetKey(Key.E))
-            {
-                GameObject.Transform.Rotation += new Vector3(100 * Time.DeltaTime, 0, 0);
-            }
-        
 
-            if (Input.GetKey(Key.W))
-            {
-                GameObject.Transform.Rotation += new Vector3(0, 100 * Time.DeltaTime, 0);
-            }
+                Console.WriteLine($"FTR: {FollowGameObject.Transform.Position} FF{FollowGameObject.Transform.Forward}");
 
-            if (Input.GetKey(Key.S))
-            {
-                GameObject.Transform.Rotation -= new Vector3(0, 100 * Time.DeltaTime, 0);
             }
 
             if (Input.GetKey(Key.D))
             {
-
-                GameObject.Transform.Position += Vector3.Normalize(Vector3.Cross(CameraComponent.CameraFront, Vector3.UnitY)) * Time.DeltaTime;
+                FollowGameObject.Transform.Rotation += new Vector3(100 * Time.DeltaTime, 0, 0);
             }
 
-            if (Input.GetKey(Key.A))
+            if (Input.GetKey(Key.W))
             {
-                GameObject.Transform.Position -= Vector3.Normalize(Vector3.Cross(CameraComponent.CameraFront, Vector3.UnitY)) * Time.DeltaTime;
+                FollowGameObject.Transform.Position += FollowGameObject.Transform.Forward * 10 * Time.DeltaTime;
             }
+
+            
         }
     }
 }

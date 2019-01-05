@@ -8,7 +8,7 @@ namespace GameEngine.Components
         public float FieldOfView = 60;
         public float Near = 0.1f;
         public float Far = 2000f;
-        public float AspectRatio = 4/3f;
+        public float AspectRatio = 4 / 3f;
 
 
         public Vector3 CameraFront;
@@ -18,23 +18,25 @@ namespace GameEngine.Components
             return degrees * 3.14f / 180;
         }
 
-        public Matrix4x4 Projection()
+        public Vector3 CalculateFrontVector()
         {
-            var front = new Vector3
+            return Vector3.Normalize(new Vector3
             {
                 X = (float)Math.Cos(DegToRad(GameObject.Transform.Rotation.X)) * (float)Math.Cos(DegToRad(GameObject.Transform.Rotation.Y)),
                 Y = (float)Math.Sin(DegToRad(GameObject.Transform.Rotation.Y)),
                 Z = (float)Math.Sin(DegToRad(GameObject.Transform.Rotation.X)) * (float)Math.Cos(DegToRad(GameObject.Transform.Rotation.Y))
-            };
-            CameraFront = Vector3.Normalize(front);
+            });
+        }
 
+        public Matrix4x4 Projection()
+        {
             //Console.WriteLine($"{GameObject.Transform.Position} {GameObject.Transform.Rotation}");
 
             var view = Matrix4x4.CreatePerspectiveFieldOfView(FieldOfView * 3.14f / 180, AspectRatio, Near, Far);
-            
+
             var projection = Matrix4x4.CreateLookAt(GameObject.Transform.Position, GameObject.Transform.Position + CameraFront, Vector3.UnitY);
 
-            return  projection * view;
+            return projection * view;
         }
     }
 }

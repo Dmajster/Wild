@@ -1,7 +1,4 @@
-﻿using System.Numerics;
-using GameEngine;
-using GameEngine.Components;
-using OpenTK.Input;
+﻿using GameEngine;
 
 namespace Game.Components
 {
@@ -9,7 +6,7 @@ namespace Game.Components
     {
         public override void OnUpdate()
         {
-            GameObject.Transform.Position += new Vector3(1,0,0) * Time.DeltaTime;
+            //GameObject.Transform.Position -= GameObject.Transform.Forward * Time.DeltaTime;
         }
     }
 }

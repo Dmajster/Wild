@@ -1,0 +1,147 @@
+{
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5123,
+            "count" : 5262,
+            "max" : [
+                5261
+            ],
+            "min" : [
+                0
+            ],
+            "type" : "SCALAR"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 5262,
+            "max" : [
+                1.676424264907837,
+                7.4550862312316895,
+                1.9265820980072021
+            ],
+            "min" : [
+                -2.0206239223480225,
+                -0.22443628311157227,
+                -1.8987629413604736
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5126,
+            "count" : 5262,
+            "max" : [
+                0.9495984315872192,
+                1.0,
+                0.9325965642929077
+            ],
+            "min" : [
+                -0.9411691427230835,
+                -1.0,
+                -0.9303180575370789
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 3,
+            "componentType" : 5126,
+            "count" : 5262,
+            "max" : [
+                0.7605245178198532,
+                0.7681511600128936,
+                0.8307698863192856,
+                1.0
+            ],
+            "min" : [
+                0.015208515845550913,
+                0.034339807682897974,
+                0.0015176349714536787,
+                1.0
+            ],
+            "type" : "VEC4"
+        }
+    ],
+    "asset" : {
+        "generator" : "Khronos Blender glTF 2.0 exporter",
+        "version" : "2.0"
+    },
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 10524,
+            "byteOffset" : 0,
+            "target" : 34963
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 63144,
+            "byteOffset" : 10524,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 63144,
+            "byteOffset" : 73668,
+            "target" : 34962
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 84192,
+            "byteOffset" : 136812,
+            "target" : 34962
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 221004,
+            "uri" : "pine_tree_1.bin"
+        }
+    ],
+    "materials" : [
+        {
+            "name" : "Material",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.6400000190734865,
+                    0.6400000190734865,
+                    0.6400000190734865,
+                    1.0
+                ],
+                "metallicFactor" : 0.0
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "Cone.001",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "COLOR_0" : 3,
+                        "NORMAL" : 2,
+                        "POSITION" : 1
+                    },
+                    "indices" : 0,
+                    "material" : 0
+                }
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "Pines"
+        }
+    ],
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0
+            ]
+        }
+    ]
+}

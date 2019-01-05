@@ -1,14 +1,13 @@
 ﻿using GameEngine;
 using GameEngine.Components;
 using GameEngine.Gltf;
-using GameEngine.Rendering.Models;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Numerics;
 using Game.Components;
 using GameEngine.Materials;
 using GameEngine.Physics;
+using Jitter.Collision.Shapes;
 using Jitter.Dynamics;
 
 namespace Game
@@ -43,10 +42,17 @@ namespace Game
         public void OnLoad(object sender, EventArgs e)
         {
             var groundModel = GltfImporter.Load("./Resources/Models/test_1.gltf");
-            var monkeyModel = GltfImporter.Load("./Resources/Models/monkey.gltf");
-            foreach (var mesh in monkeyModel.Meshes)
+            var playerModel = GltfImporter.Load("./Resources/Models/postpose.gltf");
+            var pineTreeModel = GltfImporter.Load("./Resources/Models/pine_tree_1.gltf");
+
+            foreach (var mesh in playerModel.Meshes)
             {
-                mesh.Material = new BasicInstancedMaterial();
+                mesh.Material = new BasicShadedColoredMaterial();
+            }
+
+            foreach (var mesh in pineTreeModel.Meshes)
+            {
+                mesh.Material = new BasicShadedColoredMaterial();
             }
 
             var groundMaterial = new BasicShadedMaterial()
@@ -66,43 +72,58 @@ namespace Game
             });
 
             var groundShape = new ModelShape(groundModel);
-            
-            var groundPhysics = ground.AddComponent(new PhysicsComponent()
+            ground.AddComponent(new PhysicsComponent()
             {
                 RigidBody = new RigidBody(groundShape.Shape)
                 {
                     IsStatic = true,
-                    Tag = Color.LightGray
+                    AllowDeactivation = false
                 }
             });
+
+            var player = new GameObject();
+            var playerShape = new ModelShape(playerModel);
+
+            var pineTree = new GameObject();
+            pineTree.AddComponent(new ModelComponent()
+            {
+                Model = pineTreeModel
+            });
+            pineTree.Transform.Position = new Vector3(80, 73, 100);
+            pineTree.Transform.Scale = new Vector3(4,4,4);
+
+            player.AddComponent(new ModelComponent
+            {
+                Model = playerModel
+            });
+            player.AddComponent(new PhysicsComponent
+            {
+                RigidBody = new RigidBody(new BoxShape(1f,0.5f,1))
+                {
+                    AffectedByGravity = true,
+                    AllowDeactivation = false
+                }
+            });
+            player.AddComponent(new MonkeyComponent());
+           
+            player.Transform.Position = new Vector3(145.0654f, 100.74099f, 173.0334f);
+            player.Transform.Rotation = new Vector3(215.9143f, 0f, 0f);
 
             var camera = WindowManager.Scene.ActiveCamera;
-            camera.AddComponent(new FreelookCameraComponent());
+            camera.AddComponent(new FollowCameraComponent()
+            {
+                FollowGameObject = player
+            });
 
-            camera.Transform.Position = new Vector3(5,0,0);
-            camera.Transform.Position = new Vector3(154.0654f, 78.74099f, 185.0334f);
+            /*
+            camera.AddComponent(new FreelookCameraComponent()
+            {
+                FollowGameObject = player
+            });
+
+            camera.Transform.Position = new Vector3(154.0654f, 80.74099f, 185.0334f);
             camera.Transform.Rotation = new Vector3(224.9143f, -2.557277f, 0f);
-
-
-            var monkey = new GameObject();
-            var monkeyShape = new ModelShape(monkeyModel);
-
-            monkey.AddComponent(new ModelComponent
-            {
-                Model = monkeyModel
-            });
-            monkey.AddComponent(new PhysicsComponent
-            {
-                RigidBody = new RigidBody(monkeyShape.Shape)
-                {
-                    AffectedByGravity = false
-                }
-            });
-            monkey.AddComponent(new MonkeyComponent());
-           
-            monkey.Transform.Position = new Vector3(0,500,0);
-
-            monkey.Transform.Position = new Vector3(142.0654f, 110.74099f, 173.0334f);
+            */
         }
 
         public void OnFrameUpdate(float deltaTime)

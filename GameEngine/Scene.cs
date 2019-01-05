@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using GameEngine.Components;
 using GameEngine.Extensions;
 using Jitter;
@@ -14,7 +15,7 @@ namespace GameEngine
     {
         public Scene()
         {
-            _collisionSystem = new CollisionSystemSAP();
+            _collisionSystem = new CollisionSystemBrute();
             _collisionSystem.CollisionDetected += OnCollisionDetected;
             _collisionSystem.Detect(true);
             _world = new World(_collisionSystem);
@@ -28,11 +29,25 @@ namespace GameEngine
         {
 
             var gameObjects = FindGameObjectsWithComponent<PhysicsComponent>();
-            var first = gameObjects.First(gameObject => gameObject.GetComponent<PhysicsComponent>().RigidBody == body2);
-            first.GetComponent<PhysicsComponent>().RigidBody.Force = JVector.Zero;
+            GameObject retractor; 
+
+            if (body1.IsStatic)
+            {
+                retractor = gameObjects.First(gameObject => gameObject.GetComponent<PhysicsComponent>().RigidBody == body2);
+                body2.LinearVelocity = JVector.Zero;
+            }
+            else
+            {
+                retractor = gameObjects.First(gameObject => gameObject.GetComponent<PhysicsComponent>().RigidBody == body1);
+                body1.LinearVelocity = JVector.Zero;
+            }
+
+
+            //retractor.GetComponent<PhysicsComponent>().RigidBody.AddForce(normal*-penetration);
             //first.GetComponent<PhysicsComponent>().RigidBody.LinearVelocity = JVector.Zero;
-            first.Transform.Position -= normal.Cast() * penetration;
-            Console.WriteLine($"Collision detected! {body2.Position} {body2.Force}");
+            //retractor.GetComponent<PhysicsComponent>().RigidBody.Force = JVector.Zero;
+            retractor.Transform.Position += Vector3.Normalize(normal.Cast()) * penetration;
+            //Console.WriteLine($"Collision detected! {body2.Position} {body2.Force}");
         }
 
         private readonly List<GameObject> _gameObjects = new List<GameObject>();
@@ -81,6 +96,7 @@ namespace GameEngine
 
         public void PhysicsStep(float deltaTime)
         {
+            _world.ContactSettings.BiasFactor = 1f;
             _world.Step(deltaTime,false);
         }
     }

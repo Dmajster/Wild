@@ -9,6 +9,7 @@ namespace Game.Components
     public class FreelookCameraComponent : Component
     {
         public CameraComponent CameraComponent;
+        public GameObject FollowGameObject;
 
         public override void OnLoad()
         {
@@ -19,12 +20,12 @@ namespace Game.Components
         {
             if (Input.GetMouseButton(MouseButton.Left))
             {
-                GameObject.Transform.Position += GameObject.GetComponent<CameraComponent>().CameraFront * 10 * Time.DeltaTime;
+                GameObject.Transform.Position += GameObject.GetComponent<CameraComponent>().CameraFront * 100 * Time.DeltaTime;
             }
 
             if (Input.GetMouseButton(MouseButton.Right))
             {
-                GameObject.Transform.Position -= GameObject.GetComponent<CameraComponent>().CameraFront * 10 * Time.DeltaTime;
+                GameObject.Transform.Position -= GameObject.GetComponent<CameraComponent>().CameraFront * 100 * Time.DeltaTime;
             }
 
             if (Input.GetKey(Key.Q))
@@ -48,6 +49,16 @@ namespace Game.Components
                 GameObject.Transform.Rotation -= new Vector3(0, 100 * Time.DeltaTime, 0);
             }
 
+            if (Input.GetKey(Key.J))
+            {
+                FollowGameObject.Transform.Rotation += new Vector3(100 * Time.DeltaTime, 0, 0);
+            }
+
+            if (Input.GetKey(Key.K))
+            {
+                FollowGameObject.Transform.Position += FollowGameObject.Transform.Forward * Time.DeltaTime * 4;
+            }
+
             if (Input.GetKey(Key.D))
             {
 
@@ -58,6 +69,8 @@ namespace Game.Components
             {
                 GameObject.Transform.Position -= Vector3.Normalize(Vector3.Cross(CameraComponent.CameraFront, Vector3.UnitY)) * Time.DeltaTime;
             }
+
+            CameraComponent.CameraFront = CameraComponent.CalculateFrontVector();
         }
     }
 }
